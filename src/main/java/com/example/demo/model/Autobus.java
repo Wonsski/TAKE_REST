@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Autobus {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idAutobus;

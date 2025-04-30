@@ -1,0 +1,337 @@
+{
+  "info": {
+    "name": "System Przewoz\u00f3w \u2013 Scenariusze TAKE",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "system-przewozow-take-2025-04-30T19:53:48.961630"
+  },
+  "item": [
+    {
+      "name": "Dodanie trasy \u2013 poprawne dane",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/trasy",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "trasy"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"miejsceWyjazdu\": \"Warszawa\",\n  \"miejscePrzyjazdu\": \"Krak\\u00f3w\",\n  \"dystans\": 300,\n  \"czasPodrozy\": 4.5\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.code === 200);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dodanie trasy \u2013 ujemny dystans",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/trasy",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "trasy"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"miejsceWyjazdu\": \"Warszawa\",\n  \"miejscePrzyjazdu\": \"Krak\\u00f3w\",\n  \"dystans\": -50,\n  \"czasPodrozy\": 3.5\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 400/500\", () => [400,500].includes(pm.response.code));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dodanie autobusu \u2013 poprawne dane",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/autobusy",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "autobusy"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"marka\": \"Mercedes\",\n  \"model\": \"Tourismo\",\n  \"nrRej\": \"WX12345\",\n  \"liczbaMiejsc\": 50\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.code === 200);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dodanie autobusu \u2013 liczba miejsc = 0",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/autobusy",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "autobusy"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"marka\": \"Mercedes\",\n  \"model\": \"Tourismo\",\n  \"nrRej\": \"WX12346\",\n  \"liczbaMiejsc\": 0\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 400/500\", () => [400,500].includes(pm.response.code));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dodanie przewozu \u2013 poprawne dane",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/przewozy",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "przewozy"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trasa\": {\n    \"idTrasa\": 1\n  },\n  \"autobus\": {\n    \"idAutobus\": 1\n  },\n  \"dataWyjazdu\": \"2025-06-01\",\n  \"dataPrzyjazdu\": \"2025-06-01\",\n  \"cena\": 120.0\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.code === 200);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dodanie klienta \u2013 poprawne dane",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/klienci",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "klienci"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"imie\": \"Jan\",\n  \"nazwisko\": \"Kowalski\",\n  \"email\": \"jan.kowalski@example.com\",\n  \"nrTel\": \"123456789\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.code === 200);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rezerwacja \u2013 przypisanie klienta do przewozu",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/przewozy/1/dodaj-klienta/1",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "przewozy",
+            "1",
+            "dodaj-klienta",
+            "1"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.code === 200);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rezerwacja \u2013 podw\u00f3jna rezerwacja",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/przewozy/1/dodaj-klienta/1",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "przewozy",
+            "1",
+            "dodaj-klienta",
+            "1"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.code === 200);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wyszukiwanie przewoz\u00f3w \u2013 brak wynik\u00f3w",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/przewozy/szukaj?cenaMin=9999&cenaMax=99999",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "przewozy",
+            "szukaj?cenaMin=9999&cenaMax=99999"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.code === 200);"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.KlientDTO;
-import com.example.demo.dto.PrzewozDTO;
+import com.example.demo.model.dto.KlientDTO;
+import com.example.demo.model.dto.PrzewozDTO;
 import com.example.demo.model.Klient;
 import com.example.demo.model.Przewoz;
 import com.example.demo.repository.KlientRepository;
@@ -14,8 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/przewozy")

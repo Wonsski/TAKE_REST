@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.TrasaDTO;
+import com.example.demo.model.dto.TrasaDTO;
 import com.example.demo.model.Trasa;
 import com.example.demo.repository.TrasaRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +11,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/trasy")

@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.model.dto;
 
 import com.example.demo.controller.PrzewozController;
 import com.example.demo.model.Przewoz;

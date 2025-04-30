@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.KlientDTO;
+import com.example.demo.model.dto.KlientDTO;
 import com.example.demo.model.Klient;
 import com.example.demo.repository.KlientRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +11,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/klienci")

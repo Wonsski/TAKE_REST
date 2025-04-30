@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Trasa;
+import com.example.demo.model.trasa.Trasa;
 import com.example.demo.repository.TrasaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

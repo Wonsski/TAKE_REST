@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Klient;
+import com.example.demo.model.klient.Klient;
 import com.example.demo.repository.KlientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

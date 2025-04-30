@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.demo.model.autobus;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,8 +7,9 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter @Setter
 public class Autobus {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idAutobus;
@@ -17,4 +18,5 @@ public class Autobus {
     private String model;
     private String nrRej;
     private int liczbaMiejsc;
+    
 }

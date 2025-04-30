@@ -1,5 +1,6 @@
-package com.example.demo.model;
+package com.example.demo.model.klient;
 
+import com.example.demo.model.przewoz.Przewoz;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter @Setter
 public class Klient {
 
     @Id

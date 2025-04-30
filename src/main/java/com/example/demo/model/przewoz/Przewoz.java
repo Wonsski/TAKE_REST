@@ -1,5 +1,8 @@
-package com.example.demo.model;
+package com.example.demo.model.przewoz;
 
+import com.example.demo.model.autobus.Autobus;
+import com.example.demo.model.klient.Klient;
+import com.example.demo.model.trasa.Trasa;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,6 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter @Setter
 public class Przewoz {
 
     @Id

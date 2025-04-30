@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.demo.model.trasa;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,6 +7,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter @Setter
 public class Trasa {
 
     @Id

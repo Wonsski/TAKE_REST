@@ -11,11 +11,11 @@ import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/autobusy")
@@ -26,7 +26,7 @@ public class AutobusController {
 
     // CREATE
     @PostMapping
-    public AutobusDTO DodajAutobus(@RequestBody @Valid Autobus autobus) {
+    public AutobusDTO addAutobus(@RequestBody @Valid Autobus autobus) {
         try {
             Autobus zapisanyAutobus = autobusRepo.save(autobus);
             return new AutobusDTO(zapisanyAutobus);
@@ -37,44 +37,59 @@ public class AutobusController {
 
     // READ ALL
     @GetMapping
-    public CollectionModel<AutobusDTO> getAll() {
-        List<AutobusDTO> lista = new ArrayList<>();
-        for (Autobus a : autobusRepo.findAll()) {
-            lista.add(new AutobusDTO(a));
+    public ResponseEntity<?> getAll() {
+        List<AutobusDTO> lista = StreamSupport
+                .stream(autobusRepo.findAll().spliterator(), false)
+                .map(AutobusDTO::new)
+                .toList();
+
+        if (lista.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Brak autobusów w bazie");
         }
-        return CollectionModel.of(lista);
+
+        return ResponseEntity.ok(CollectionModel.of(lista));
     }
 
     // READ ONE
     @GetMapping("/{id}")
-    public AutobusDTO getAutobus(@PathVariable("id") Integer id) {
-        Autobus a = autobusRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                             "Nie znaleziono autobusu o ID " + id));
-        return new AutobusDTO(a);
+    public ResponseEntity<?> getAutobus(@PathVariable("id") Integer id) {
+        Optional<Autobus> optionalAutobus = autobusRepo.findById(id);
+
+        if (optionalAutobus.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("nie znaleziono Autobusu o ID: " + id);
+        }
+
+        AutobusDTO dto = new AutobusDTO(optionalAutobus.get());
+        return ResponseEntity.ok(dto);
     }
 
     // UPDATE
     @PutMapping("/{id}")
-    public AutobusDTO aktualizujAutobus(@PathVariable("id") Integer id, @RequestBody @Valid Autobus autobus) {
-        Autobus istniejący = autobusRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Nie znaleziono autobusu o ID " + id));
+    public ResponseEntity<?> uppdateAutobus(@PathVariable("id") Integer id, @RequestBody @Valid Autobus autobus) {
+        if (autobus == null) {
+            return ResponseEntity.badRequest().body("Brak danych klienta w żądaniu");
+        }
+        Optional<Autobus> optionalAutobus = autobusRepo.findById(id);
+        if (optionalAutobus.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Nie znaleziono autobusu o ID " + id);
+        }
+        Autobus existing = optionalAutobus.get();
 
-        istniejący.setMarka(autobus.getMarka());
-        istniejący.setModel(autobus.getModel());
-        istniejący.setNrRej(autobus.getNrRej());
-        istniejący.setLiczbaMiejsc(autobus.getLiczbaMiejsc());
-
-        return new AutobusDTO(autobusRepo.save(istniejący));
+        existing.setMarka(autobus.getMarka());
+        existing.setModel(autobus.getModel());
+        existing.setNrRej(autobus.getNrRej());
+        existing.setLiczbaMiejsc(autobus.getLiczbaMiejsc());
+        AutobusDTO dto = new AutobusDTO(autobusRepo.save(existing));
+        return ResponseEntity.ok(dto);
     }
 
     // DELETE
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteAutobus(@PathVariable("id") Integer id) {
+    public ResponseEntity<?> deleteAutobus(@PathVariable("id") Integer id) {
         if (!autobusRepo.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Autobus o ID " + id + " nie istnieje");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Autobus o ID " + id + " nie istnieje");
         }
 
         autobusRepo.deleteById(id);
@@ -92,10 +107,10 @@ public class AutobusController {
                                                     .and(AutobusSpecifications.Model(model))
                                                     .and(AutobusSpecifications.NrRej(nrRej));
 
-        List<Autobus> wyniki = autobusRepo.findAll(spec);
+        List<Autobus> output = autobusRepo.findAll(spec);
 
-        List<AutobusDTO> listaDTO = wyniki.stream().map(AutobusDTO::new).collect(Collectors.toList());
-        return ResponseEntity.ok(CollectionModel.of(listaDTO));
+        List<AutobusDTO> dtoList = output.stream().map(AutobusDTO::new).collect(Collectors.toList());
+        return ResponseEntity.ok(CollectionModel.of(dtoList));
     }
 }
 class AutobusSpecifications {

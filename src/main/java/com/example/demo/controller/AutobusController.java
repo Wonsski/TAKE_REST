@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Przewoz;
 import com.example.demo.model.dto.AutobusDTO;
 import com.example.demo.model.Autobus;
 import com.example.demo.repository.AutobusRepository;
+import com.example.demo.repository.PrzewozRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.hateoas.CollectionModel;
@@ -23,6 +25,7 @@ import java.util.stream.StreamSupport;
 public class AutobusController {
 
     private final AutobusRepository autobusRepo;
+    private final PrzewozRepository przewozRepo;
 
     // CREATE
     @PostMapping
@@ -86,10 +89,24 @@ public class AutobusController {
     }
 
     // DELETE
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAutobus(@PathVariable("id") Integer id) {
         if (!autobusRepo.existsById(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Autobus o ID " + id + " nie istnieje");
+        }
+
+        List<Przewoz> powiazanePrzewozy = StreamSupport
+                .stream(przewozRepo.findAll().spliterator(), false)
+                .filter(p -> p.getAutobus().getIdAutobus().equals(id))
+                .toList();
+
+        if (!powiazanePrzewozy.isEmpty()) {
+            String powiazaneId = powiazanePrzewozy.stream()
+                    .map(p -> p.getIdPrzewoz().toString())
+                    .collect(Collectors.joining(", "));
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Nie można usunąć autobusu – powiązany z przewozami o ID: " + powiazaneId);
         }
 
         autobusRepo.deleteById(id);

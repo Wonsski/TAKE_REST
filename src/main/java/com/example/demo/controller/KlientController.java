@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Przewoz;
 import com.example.demo.model.dto.KlientDTO;
 import com.example.demo.model.Klient;
 import com.example.demo.repository.KlientRepository;
@@ -88,16 +89,32 @@ public class KlientController {
     // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteKlient(@PathVariable("id") Integer id) {
-        if (!klientRepo.existsById(id)) {
+        Optional<Klient> klientOpt = klientRepo.findById(id);
+
+        if (klientOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Nie można usunąć – klient o ID " + id + " nie istnieje");
+                    .body("Nie można usunac – klient o ID " + id + " nie istnieje");
+        }
+
+        Klient klient = klientOpt.get();
+
+        // Sprawdzenie powiązań z przewozami
+        if (!klient.getPrzewozy().isEmpty()) {
+            List<Integer> idPrzewozow = klient.getPrzewozy().stream()
+                    .map(Przewoz::getIdPrzewoz)
+                    .toList();
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Nie można usunac – klient uczestniczy w przewozach o ID: " + idPrzewozow +
+                            ". Nalezy najpierw usunąc przewoz");
         }
 
         klientRepo.deleteById(id);
-        return ResponseEntity.ok("Klient o ID " + id + " został usunięty");
+        return ResponseEntity.ok("Klient o ID " + id + " zostal usuniety");
     }
 
     // FILTER
+    // TODO: Rozbudowane filtrowanie
     @GetMapping("/szukaj")
     public CollectionModel<KlientDTO> searchByEmail(@RequestParam("email") String email) {
         List<KlientDTO> lista = klientRepo.findByEmailContainingIgnoreCase(email)

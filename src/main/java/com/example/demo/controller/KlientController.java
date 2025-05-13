@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
@@ -21,6 +23,12 @@ import java.util.stream.StreamSupport;
 public class KlientController {
 
     private final KlientRepository klientRepo;
+
+    private ResponseEntity<Map<String, String>> errorResponse(HttpStatus status, String msg) {
+        Map<String, String> err = new HashMap<>();
+        err.put("message", msg);
+        return ResponseEntity.status(status).body(err);
+    }
 
     // CREATE
     @PostMapping
@@ -42,12 +50,11 @@ public class KlientController {
                 .toList();
 
         if (lista.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Brak klientów w bazie");
+            return errorResponse(HttpStatus.NOT_FOUND, "Brak klientów w bazie");
         }
 
         return ResponseEntity.ok(CollectionModel.of(lista));
     }
-
 
     // READ ONE
     @GetMapping("/{id}")
@@ -55,8 +62,7 @@ public class KlientController {
         Optional<Klient> optionalKlient = klientRepo.findById(id);
 
         if (optionalKlient.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Nie znaleziono klienta o ID " + id);
+            return errorResponse(HttpStatus.NOT_FOUND, "Nie znaleziono klienta o ID " + id);
         }
 
         KlientDTO dto = new KlientDTO(optionalKlient.get());
@@ -67,13 +73,12 @@ public class KlientController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateKlient(@PathVariable("id") Integer id, @Valid @RequestBody Klient klient) {
         if (klient == null) {
-            return ResponseEntity.badRequest().body("Brak danych klienta w żądaniu");
+            return errorResponse(HttpStatus.BAD_REQUEST, "Brak danych klienta w żądaniu");
         }
 
         Optional<Klient> optionalKlient = klientRepo.findById(id);
         if (optionalKlient.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Nie znaleziono klienta o ID " + id);
+            return errorResponse(HttpStatus.NOT_FOUND, "Nie znaleziono klienta o ID " + id);
         }
 
         Klient existing = optionalKlient.get();
@@ -92,29 +97,25 @@ public class KlientController {
         Optional<Klient> klientOpt = klientRepo.findById(id);
 
         if (klientOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Nie można usunac – klient o ID " + id + " nie istnieje");
+            return errorResponse(HttpStatus.NOT_FOUND, "Nie można usunąć – klient o ID " + id + " nie istnieje");
         }
 
         Klient klient = klientOpt.get();
 
-        // Sprawdzenie powiązań z przewozami
         if (!klient.getPrzewozy().isEmpty()) {
             List<Integer> idPrzewozow = klient.getPrzewozy().stream()
                     .map(Przewoz::getIdPrzewoz)
                     .toList();
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Nie można usunac – klient uczestniczy w przewozach o ID: " + idPrzewozow +
-                            ". Nalezy najpierw usunąc przewoz");
+            return errorResponse(HttpStatus.BAD_REQUEST,
+                    "Nie można usunąć – klient uczestniczy w przewozach o ID: " + idPrzewozow + ". Należy najpierw usunąć przewóz.");
         }
 
         klientRepo.deleteById(id);
-        return ResponseEntity.ok("Klient o ID " + id + " zostal usuniety");
+        return ResponseEntity.ok(Map.of("message", "Klient o ID " + id + " został usunięty"));
     }
 
     // FILTER
-    // TODO: Rozbudowane filtrowanie
     @GetMapping("/szukaj")
     public CollectionModel<KlientDTO> searchByEmail(@RequestParam("email") String email) {
         List<KlientDTO> lista = klientRepo.findByEmailContainingIgnoreCase(email)

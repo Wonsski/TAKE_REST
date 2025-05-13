@@ -9,12 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -26,6 +27,10 @@ public class AutobusController {
 
     private final AutobusRepository autobusRepo;
     private final PrzewozRepository przewozRepo;
+
+    private ResponseEntity<?> message(HttpStatus status, String msg) {
+        return ResponseEntity.status(status).body(Map.of("message", msg));
+    }
 
     // CREATE
     @PostMapping
@@ -47,7 +52,7 @@ public class AutobusController {
                 .toList();
 
         if (lista.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Brak autobusów w bazie");
+            return message(HttpStatus.NOT_FOUND, "Brak autobusów w bazie");
         }
 
         return ResponseEntity.ok(CollectionModel.of(lista));
@@ -59,8 +64,7 @@ public class AutobusController {
         Optional<Autobus> optionalAutobus = autobusRepo.findById(id);
 
         if (optionalAutobus.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("nie znaleziono Autobusu o ID: " + id);
+            return message(HttpStatus.NOT_FOUND, "Nie znaleziono autobusu o ID: " + id);
         }
 
         AutobusDTO dto = new AutobusDTO(optionalAutobus.get());
@@ -71,19 +75,20 @@ public class AutobusController {
     @PutMapping("/{id}")
     public ResponseEntity<?> uppdateAutobus(@PathVariable("id") Integer id, @RequestBody @Valid Autobus autobus) {
         if (autobus == null) {
-            return ResponseEntity.badRequest().body("Brak danych klienta w żądaniu");
+            return message(HttpStatus.BAD_REQUEST, "Brak danych autobusu w żądaniu");
         }
+
         Optional<Autobus> optionalAutobus = autobusRepo.findById(id);
         if (optionalAutobus.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Nie znaleziono autobusu o ID " + id);
+            return message(HttpStatus.NOT_FOUND, "Nie znaleziono autobusu o ID " + id);
         }
-        Autobus existing = optionalAutobus.get();
 
+        Autobus existing = optionalAutobus.get();
         existing.setMarka(autobus.getMarka());
         existing.setModel(autobus.getModel());
         existing.setNrRej(autobus.getNrRej());
         existing.setLiczbaMiejsc(autobus.getLiczbaMiejsc());
+
         AutobusDTO dto = new AutobusDTO(autobusRepo.save(existing));
         return ResponseEntity.ok(dto);
     }
@@ -92,8 +97,7 @@ public class AutobusController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAutobus(@PathVariable("id") Integer id) {
         if (!autobusRepo.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Autobus o ID " + id + " nie istnieje");
+            return message(HttpStatus.NOT_FOUND, "Autobus o ID " + id + " nie istnieje");
         }
 
         List<Przewoz> powiazanePrzewozy = StreamSupport
@@ -105,12 +109,11 @@ public class AutobusController {
             String powiazaneId = powiazanePrzewozy.stream()
                     .map(p -> p.getIdPrzewoz().toString())
                     .collect(Collectors.joining(", "));
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Nie można usunąć autobusu – powiązany z przewozami o ID: " + powiazaneId);
+            return message(HttpStatus.CONFLICT, "Nie można usunąć autobusu – powiązany z przewozami o ID: " + powiazaneId);
         }
 
         autobusRepo.deleteById(id);
-        return ResponseEntity.ok("Autobus o ID " + id + " został pomyślnie usunięty.");
+        return message(HttpStatus.OK, "Autobus o ID " + id + " został pomyślnie usunięty.");
     }
 
     // FILTER
@@ -125,11 +128,12 @@ public class AutobusController {
                                                     .and(AutobusSpecifications.NrRej(nrRej));
 
         List<Autobus> output = autobusRepo.findAll(spec);
-
         List<AutobusDTO> dtoList = output.stream().map(AutobusDTO::new).collect(Collectors.toList());
+
         return ResponseEntity.ok(CollectionModel.of(dtoList));
     }
 }
+
 class AutobusSpecifications {
 
     public static Specification<Autobus> Marka(String marka) {

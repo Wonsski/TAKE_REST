@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/trasy")
@@ -29,47 +30,64 @@ public class TrasaController {
     private final TrasaRepository trasaRepo;
     private final PrzewozRepository przewozRepo;
 
+    private ResponseEntity<?> message(HttpStatus status, String msg) {
+        return ResponseEntity.status(status).body(Map.of("message", msg));
+    }
+
     // CREATE
     @PostMapping
     public TrasaDTO addTrasa(@Valid @RequestBody Trasa trasa) {
         try {
             Trasa newTrasa = trasaRepo.save(trasa);
             return new TrasaDTO(newTrasa);
-        }catch (Exception e){
-            throw new RuntimeException("Błąd podczas zapisywania trasy: "+ e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException("Błąd podczas zapisywania trasy: " + e.getMessage());
         }
     }
 
-    // READ ALL
+ // READ ALL
     @GetMapping
-    public CollectionModel<TrasaDTO> getAll() {
+    public ResponseEntity<?> getAll() {
         List<TrasaDTO> lista = new ArrayList<>();
         for (Trasa t : trasaRepo.findAll()) {
             lista.add(new TrasaDTO(t));
         }
-        return CollectionModel.of(lista);
+
+        if (lista.isEmpty()) {
+            return message(HttpStatus.NOT_FOUND, "Brak dostępnych tras w bazie");
+        }
+
+        return ResponseEntity.ok(CollectionModel.of(lista));
     }
 
     // READ ONE
     @GetMapping("/{id}")
-    public TrasaDTO getTrasa(@PathVariable("id") Integer id) {
-        Trasa t = trasaRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Nie znaleziono trasy o ID " + id));
-        return new TrasaDTO(t);
+    public ResponseEntity<?> getTrasa(@PathVariable("id") Integer id) {
+        Optional<Trasa> trasaOpt = trasaRepo.findById(id);
+
+        if (trasaOpt.isEmpty()) {
+            return message(HttpStatus.NOT_FOUND, "Nie znaleziono trasy o ID " + id);
+        }
+
+        return ResponseEntity.ok(new TrasaDTO(trasaOpt.get()));
     }
 
     // UPDATE
     @PutMapping("/{id}")
-    public TrasaDTO updateTrasa(@PathVariable("id") Integer id, @Valid @RequestBody Trasa trasa) {
-        Trasa istniejąca = trasaRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Nie znaleziono trasy o ID " + id));
+    public ResponseEntity<?> updateTrasa(@PathVariable("id") Integer id, @Valid @RequestBody Trasa trasa) {
+        Optional<Trasa> trasaOpt = trasaRepo.findById(id);
+
+        if (trasaOpt.isEmpty()) {
+            return message(HttpStatus.NOT_FOUND, "Nie znaleziono trasy o ID " + id);
+        }
+
+        Trasa istniejąca = trasaOpt.get();
         istniejąca.setMiejsceWyjazdu(trasa.getMiejsceWyjazdu());
         istniejąca.setMiejscePrzyjazdu(trasa.getMiejscePrzyjazdu());
         istniejąca.setDystans(trasa.getDystans());
         istniejąca.setCzasPodrozy(trasa.getCzasPodrozy());
-        return new TrasaDTO(trasaRepo.save(istniejąca));
+
+        return ResponseEntity.ok(new TrasaDTO(trasaRepo.save(istniejąca)));
     }
 
     // DELETE
@@ -78,8 +96,7 @@ public class TrasaController {
         Optional<Trasa> trasaOpt = trasaRepo.findById(id);
 
         if (trasaOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Nie można usunąć – trasa o ID " + id + " nie istnieje");
+            return message(HttpStatus.NOT_FOUND, "Nie można usunąć – trasa o ID " + id + " nie istnieje");
         }
 
         Trasa trasa = trasaOpt.get();
@@ -94,17 +111,15 @@ public class TrasaController {
                     .map(Przewoz::getIdPrzewoz)
                     .toList();
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Nie można usunąć – trasa jest używana w przewozach o ID: " + idPrzewozow +
-                            ". Usuń te przewozy przed usunięciem trasy.");
+            return message(HttpStatus.BAD_REQUEST, "Nie można usunąć – trasa jest używana w przewozach o ID: " + idPrzewozow +
+                    ". Usuń te przewozy przed usunięciem trasy.");
         }
 
         trasaRepo.deleteById(id);
-        return ResponseEntity.ok("Trasa o ID " + id + " została usunięta");
+        return message(HttpStatus.OK, "Trasa o ID " + id + " została usunięta");
     }
 
     // FILTER
-    // TODO: Rozbudowane filtrowanie
     @GetMapping("/szukaj")
     public CollectionModel<TrasaDTO> searchByWyjazd(@RequestParam("miejsceWyjazdu") String miejsceWyjazdu) {
         List<TrasaDTO> lista = trasaRepo.findByMiejsceWyjazduContainingIgnoreCase(miejsceWyjazdu)
@@ -114,3 +129,4 @@ public class TrasaController {
         return CollectionModel.of(lista);
     }
 }
+

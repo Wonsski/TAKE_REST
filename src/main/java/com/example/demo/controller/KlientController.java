@@ -117,12 +117,13 @@ public class KlientController {
 
     // FILTER
     @GetMapping("/szukaj")
-    public CollectionModel<KlientDTO> searchByEmail(@RequestParam("email") String email) {
+    public ResponseEntity<Map<String, List<KlientDTO>>> searchByEmail(@RequestParam("email") String email) {
         List<KlientDTO> lista = klientRepo.findByEmailContainingIgnoreCase(email)
                 .stream()
                 .map(KlientDTO::new)
                 .toList();
 
-        return CollectionModel.of(lista);
+        return ResponseEntity.ok(Map.of("klientDTOList", lista));
     }
+
 }

@@ -121,12 +121,16 @@ public class TrasaController {
 
     // FILTER
     @GetMapping("/szukaj")
-    public CollectionModel<TrasaDTO> searchByWyjazd(@RequestParam("miejsceWyjazdu") String miejsceWyjazdu) {
+    public ResponseEntity<Map<String, List<TrasaDTO>>> searchByWyjazd(
+            @RequestParam(name = "miejsceWyjazdu", required = false) String miejsceWyjazdu) {
+
         List<TrasaDTO> lista = trasaRepo.findByMiejsceWyjazduContainingIgnoreCase(miejsceWyjazdu)
                 .stream()
                 .map(TrasaDTO::new)
                 .toList();
-        return CollectionModel.of(lista);
+
+        return ResponseEntity.ok(Map.of("trasaDTOList", lista));
     }
+
 }
 

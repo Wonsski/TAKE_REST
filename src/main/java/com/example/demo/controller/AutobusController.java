@@ -118,20 +118,24 @@ public class AutobusController {
 
     // FILTER
     @GetMapping("/szukaj")
-    public ResponseEntity<CollectionModel<AutobusDTO>> szukaj(
-            @RequestParam(required = false) String marka,
-            @RequestParam(required = false) String model,
-            @RequestParam(required = false) String nrRej) {
+    public ResponseEntity<Map<String, List<AutobusDTO>>> szukaj(
+    		@RequestParam(name = "marka", required = false) String marka,
+    		@RequestParam(name = "model", required = false) String model,
+    		@RequestParam(name = "nrRej", required = false) String nrRej) {
 
-        Specification<Autobus> spec = Specification.where(AutobusSpecifications.Marka(marka))
-                                                    .and(AutobusSpecifications.Model(model))
-                                                    .and(AutobusSpecifications.NrRej(nrRej));
+        Specification<Autobus> spec = Specification
+                .where(AutobusSpecifications.Marka(marka))
+                .and(AutobusSpecifications.Model(model))
+                .and(AutobusSpecifications.NrRej(nrRej));
 
-        List<Autobus> output = autobusRepo.findAll(spec);
-        List<AutobusDTO> dtoList = output.stream().map(AutobusDTO::new).collect(Collectors.toList());
+        List<AutobusDTO> dtoList = autobusRepo.findAll(spec)
+                .stream()
+                .map(AutobusDTO::new)
+                .toList();
 
-        return ResponseEntity.ok(CollectionModel.of(dtoList));
+        return ResponseEntity.ok(Map.of("autobusDTOList", dtoList));
     }
+
 }
 
 class AutobusSpecifications {

@@ -2544,6 +2544,1867 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Przewoz",
+			"item": [
+				{
+					"name": "Suite setup",
+					"item": [
+						{
+							"name": "DodajKlienta1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"imie\": \"Jan\",\n  \"nazwisko\": \"Kowalski\",\n  \"email\": \"jan.kowalski@example.com\",\n  \"nrTel\": \"123456789\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/klienci",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"klienci"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DodajKlienta2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"imie\": \"Jan\",\n  \"nazwisko\": \"Kowalski\",\n  \"email\": \"jan.kowalski@example.com\",\n  \"nrTel\": \"123456789\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/klienci",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"klienci"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DodajAutobus",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"marka\": \"Solaris\",\n  \"model\": \"Urbino 12\",\n  \"nrRej\": \"KR12345\",\n  \"liczbaMiejsc\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/autobusy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"autobusy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DodajTrase",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"miejsceWyjazdu\": \"Warszawa\",\n  \"miejscePrzyjazdu\": \"Kraków\",\n  \"dystans\": 290,\n  \"czasPodrozy\": 240\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/trasy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"trasy"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Test suite",
+					"item": [
+						{
+							"name": "Pusta baza",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test(\"Komunikat o braku przewozów\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\", \"Brak przewozów w bazie\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Poprawne dodanie przewozu",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Zawartość poprawnego przewozu\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"idPrzewoz\", 1);",
+											"    pm.expect(json).to.have.property(\"dataWyjazdu\", \"2025-06-01\");",
+											"    pm.expect(json).to.have.property(\"dataPrzyjazdu\", \"2025-06-01\");",
+											"    pm.expect(json).to.have.property(\"cena\", 49.99);",
+											"    pm.expect(json).to.have.property(\"trasaOpis\", \"Warszawa → Kraków\");",
+											"    pm.expect(json).to.have.property(\"autobusOpis\", \"Solaris Urbino 12\");",
+											"});",
+											"",
+											"pm.test(\"Linki HATEOAS\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"_links\");",
+											"    pm.expect(json._links).to.have.property(\"self\");",
+											"    pm.expect(json._links.self).to.have.property(\"href\", \"http://localhost:8080/przewozy/1\");",
+											"",
+											"    pm.expect(json._links).to.have.property(\"wszystkie-przewozy\");",
+											"    pm.expect(json._links[\"wszystkie-przewozy\"]).to.have.property(\"href\", \"http://localhost:8080/przewozy\");",
+											"",
+											"    pm.expect(json._links).to.have.property(\"autobus\");",
+											"    pm.expect(json._links.autobus).to.have.property(\"href\", \"http://localhost:8080/autobusy/2\");",
+											"",
+											"    pm.expect(json._links).to.have.property(\"trasa\");",
+											"    pm.expect(json._links.trasa).to.have.property(\"href\", \"http://localhost:8080/trasy/2\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 2 },\n  \"trasa\": { \"idTrasa\": 2 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawne dodanie przewozu - brak trasy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Walidacja pola 'trasa'\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"trasa\");",
+											"    pm.expect(json.trasa).to.be.an(\"array\").that.includes(\"Trasa jest wymagana\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 1 }\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawne dodanie przewozu - brak autobusu",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Walidacja pola 'autobus'\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"autobus\");",
+											"    pm.expect(json.autobus).to.be.an(\"array\").that.includes(\"Autobus jest wymagany\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"trasa\": { \"idTrasa\": 1 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawne dodanie przewozu - brak daty wyjazdu",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Walidacja pola 'dataWyjazdu'\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"dataWyjazdu\");",
+											"    pm.expect(json.dataWyjazdu).to.be.an(\"array\").that.includes(\"Data wyjazdu jest wymagana\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 1 },\n  \"trasa\": { \"idTrasa\": 1 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawne dodanie przewozu - brak daty przyjazdu",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Walidacja pola 'dataPrzyjazdu'\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"dataPrzyjazdu\");",
+											"    pm.expect(json.dataPrzyjazdu).to.be.an(\"array\").that.includes(\"Data przyjazdu jest wymagana\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 1 },\n  \"trasa\": { \"idTrasa\": 1 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawne dodanie przewozu - brak ceny",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Zawartość przewozu z ID 2\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"idPrzewoz\", 2);",
+											"    pm.expect(json).to.have.property(\"dataWyjazdu\", \"2025-06-01\");",
+											"    pm.expect(json).to.have.property(\"dataPrzyjazdu\", \"2025-06-01\");",
+											"    pm.expect(json).to.have.property(\"cena\", 0.0);",
+											"    pm.expect(json).to.have.property(\"trasaOpis\", \"Warszawa → Kraków\");",
+											"    pm.expect(json).to.have.property(\"autobusOpis\", \"Solaris Urbino 12\");",
+											"});",
+											"",
+											"pm.test(\"Linki HATEOAS poprawne\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json._links.self.href).to.eql(\"http://localhost:8080/przewozy/2\");",
+											"    pm.expect(json._links[\"wszystkie-przewozy\"].href).to.eql(\"http://localhost:8080/przewozy\");",
+											"    pm.expect(json._links.autobus.href).to.eql(\"http://localhost:8080/autobusy/2\");",
+											"    pm.expect(json._links.trasa.href).to.eql(\"http://localhost:8080/trasy/2\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"autobus\": { \"idAutobus\": 2 },\n  \"trasa\": { \"idTrasa\": 2 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawne dodanie przewozu - puste body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"const json = pm.response.json();",
+											"",
+											"pm.test(\"Walidacja pola 'dataWyjazdu'\", function () {",
+											"    pm.expect(json).to.have.property(\"dataWyjazdu\");",
+											"    pm.expect(json.dataWyjazdu).to.be.an(\"array\").that.includes(\"Data wyjazdu jest wymagana\");",
+											"});",
+											"",
+											"pm.test(\"Walidacja pola 'dataPrzyjazdu'\", function () {",
+											"    pm.expect(json).to.have.property(\"dataPrzyjazdu\");",
+											"    pm.expect(json.dataPrzyjazdu).to.be.an(\"array\").that.includes(\"Data przyjazdu jest wymagana\");",
+											"});",
+											"",
+											"pm.test(\"Walidacja pola 'trasa'\", function () {",
+											"    pm.expect(json).to.have.property(\"trasa\");",
+											"    pm.expect(json.trasa).to.be.an(\"array\").that.includes(\"Trasa jest wymagana\");",
+											"});",
+											"",
+											"pm.test(\"Walidacja pola 'autobus'\", function () {",
+											"    pm.expect(json).to.have.property(\"autobus\");",
+											"    pm.expect(json.autobus).to.be.an(\"array\").that.includes(\"Autobus jest wymagany\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawne dodanie przewozu - zly format daty",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Komunikat o nieprawidłowym formacie pola\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\", \"Nieprawidłowy format pola: dataWyjazdu\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"test\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 1 },\n  \"trasa\": { \"idTrasa\": 1 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawne dodanie przewozu - ujemna cena",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Walidacja pola 'cena'\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"cena\");",
+											"    pm.expect(json.cena).to.be.an(\"array\").that.includes(\"Cena nie może być ujemna\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": -49.99,\n  \"autobus\": { \"idAutobus\": 1 },\n  \"trasa\": { \"idTrasa\": 1 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawne dodanie przewozu - nieistniejacy autobus",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Komunikat błędu o nieistniejącym autobusie\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\");",
+											"    pm.expect(json.message).to.include(\"Autobus o podanym ID nie istnieje\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 9999 },\n  \"trasa\": { \"idTrasa\": 1 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawne dodanie przewozu - nieistniejaca trasa",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Komunikat błędu o nieistniejącej trasie\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\");",
+											"    pm.expect(json.message).to.include(\"Trasa o podanym ID nie istnieje\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 2 },\n  \"trasa\": { \"idTrasa\": 9999 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawne dodanie przewozu - data wyjazdu > data przyjazdu",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Komunikat błędu o nieprawidłowych datach\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\");",
+											"    pm.expect(json.message).to.include(\"Data wyjazdu nie może być po dacie przyjazdu\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T12:00:00\",\n  \"dataPrzyjazdu\": \"2025-03-01T08:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 1 },\n  \"trasa\": { \"idTrasa\": 1 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dodawanie klienta",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Zawartość przewozu z przypisanym klientem\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"idPrzewoz\", 1);",
+											"    pm.expect(json).to.have.property(\"dataWyjazdu\", \"2025-06-01\");",
+											"    pm.expect(json).to.have.property(\"dataPrzyjazdu\", \"2025-06-01\");",
+											"    pm.expect(json).to.have.property(\"cena\", 49.99);",
+											"    pm.expect(json).to.have.property(\"trasaOpis\", \"Warszawa → Kraków\");",
+											"    pm.expect(json).to.have.property(\"autobusOpis\", \"Solaris Urbino 12\");",
+											"});",
+											"",
+											"pm.test(\"Linki HATEOAS w przewozie\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json._links).to.have.property(\"self\");",
+											"    pm.expect(json._links.self.href).to.eql(\"http://localhost:8080/przewozy/1\");",
+											"",
+											"    pm.expect(json._links).to.have.property(\"wszystkie-przewozy\");",
+											"    pm.expect(json._links[\"wszystkie-przewozy\"].href).to.eql(\"http://localhost:8080/przewozy\");",
+											"",
+											"    pm.expect(json._links).to.have.property(\"autobus\");",
+											"    pm.expect(json._links.autobus.href).to.eql(\"http://localhost:8080/autobusy/2\");",
+											"",
+											"    pm.expect(json._links).to.have.property(\"trasa\");",
+											"    pm.expect(json._links.trasa.href).to.eql(\"http://localhost:8080/trasy/2\");",
+											"",
+											"    pm.expect(json._links).to.have.property(\"klient-2\");",
+											"    pm.expect(json._links[\"klient-2\"].href).to.eql(\"http://localhost:8080/klienci/2\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T12:00:00\",\n  \"dataPrzyjazdu\": \"2025-03-01T08:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 1 },\n  \"trasa\": { \"idTrasa\": 1 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy/1/dodaj-klienta/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"1",
+										"dodaj-klienta",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dodawanie tego samego klienta",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Komunikat błędu o ponownej rejestracji klienta\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\", \"Klient jest już zapisany na ten przewóz.\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T12:00:00\",\n  \"dataPrzyjazdu\": \"2025-03-01T08:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 1 },\n  \"trasa\": { \"idTrasa\": 1 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy/1/dodaj-klienta/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"1",
+										"dodaj-klienta",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dodawanie nieistniejacego klienta",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test(\"Komunikat błędu o nieistniejącym kliencie\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\", \"Nie znaleziono klienta o ID 9999\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T12:00:00\",\n  \"dataPrzyjazdu\": \"2025-03-01T08:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 1 },\n  \"trasa\": { \"idTrasa\": 1 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy/1/dodaj-klienta/9999",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"1",
+										"dodaj-klienta",
+										"9999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Brak miejsc w autobusie",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Komunikat o braku dostępnych miejsc\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\", \"Brak dostępnych miejsc w autobusie.\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T12:00:00\",\n  \"dataPrzyjazdu\": \"2025-03-01T08:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 1 },\n  \"trasa\": { \"idTrasa\": 1 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy/1/dodaj-klienta/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"1",
+										"dodaj-klienta",
+										"3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dodawanie klienta do nieistniejacego przewozu",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test(\"Komunikat błędu o nieistniejącym przewozie\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\", \"Nie znaleziono przewozu o ID 9999\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T12:00:00\",\n  \"dataPrzyjazdu\": \"2025-03-01T08:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 1 },\n  \"trasa\": { \"idTrasa\": 1 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy/9999/dodaj-klienta/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"9999",
+										"dodaj-klienta",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Wylistowanie wszystkich przewozów",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Zawartość listy przewozów\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"_embedded\");",
+											"    pm.expect(json._embedded).to.have.property(\"przewozDTOList\");",
+											"    pm.expect(json._embedded.przewozDTOList).to.be.an(\"array\").that.is.not.empty;",
+											"",
+											"    json._embedded.przewozDTOList.forEach(przewoz => {",
+											"        pm.expect(przewoz).to.have.property(\"idPrzewoz\");",
+											"        pm.expect(przewoz).to.have.property(\"dataWyjazdu\");",
+											"        pm.expect(przewoz).to.have.property(\"dataPrzyjazdu\");",
+											"        pm.expect(przewoz).to.have.property(\"cena\");",
+											"        pm.expect(przewoz).to.have.property(\"trasaOpis\");",
+											"        pm.expect(przewoz).to.have.property(\"autobusOpis\");",
+											"        pm.expect(przewoz).to.have.property(\"_links\");",
+											"        pm.expect(przewoz._links).to.have.property(\"self\");",
+											"    });",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/przewozy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Zapytanie o istniejacy przewoz",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Zawartość szczegółów przewozu\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"idPrzewoz\", 1);",
+											"    pm.expect(json).to.have.property(\"dataWyjazdu\", \"2025-06-01\");",
+											"    pm.expect(json).to.have.property(\"dataPrzyjazdu\", \"2025-06-01\");",
+											"    pm.expect(json).to.have.property(\"cena\", 49.99);",
+											"    pm.expect(json).to.have.property(\"trasaOpis\", \"Warszawa → Kraków\");",
+											"    pm.expect(json).to.have.property(\"autobusOpis\", \"Solaris Urbino 12\");",
+											"});",
+											"",
+											"pm.test(\"Linki HATEOAS w odpowiedzi\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json._links).to.have.property(\"self\");",
+											"    pm.expect(json._links.self.href).to.eql(\"http://localhost:8080/przewozy/1\");",
+											"",
+											"    pm.expect(json._links).to.have.property(\"wszystkie-przewozy\");",
+											"    pm.expect(json._links[\"wszystkie-przewozy\"].href).to.eql(\"http://localhost:8080/przewozy\");",
+											"",
+											"    pm.expect(json._links).to.have.property(\"autobus\");",
+											"    pm.expect(json._links.autobus.href).to.eql(\"http://localhost:8080/autobusy/2\");",
+											"",
+											"    pm.expect(json._links).to.have.property(\"trasa\");",
+											"    pm.expect(json._links.trasa.href).to.eql(\"http://localhost:8080/trasy/2\");",
+											"",
+											"    pm.expect(json._links).to.have.property(\"klient-2\");",
+											"    pm.expect(json._links[\"klient-2\"].href).to.eql(\"http://localhost:8080/klienci/2\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/przewozy/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Zapytanie o nieistniejacy przewoz",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test(\"Komunikat błędu o nieistniejącym przewozie\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\", \"Nie znaleziono przewozu o ID 9999\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/przewozy/9999",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"9999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Poprawna aktualizacja danych przewozu",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Zawartość przewozu z brakującymi danymi opisu\", function () {",
+											"    const json = pm.response.json();",
+											"",
+											"    pm.expect(json).to.have.property(\"idPrzewoz\", 1);",
+											"    pm.expect(json).to.have.property(\"dataWyjazdu\", \"2025-06-01\");",
+											"    pm.expect(json).to.have.property(\"dataPrzyjazdu\", \"2025-06-01\");",
+											"    pm.expect(json).to.have.property(\"cena\", 500.0);",
+											"});",
+											"",
+											"pm.test(\"Linki HATEOAS nadal obecne\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json._links.self.href).to.eql(\"http://localhost:8080/przewozy/1\");",
+											"    pm.expect(json._links[\"wszystkie-przewozy\"].href).to.eql(\"http://localhost:8080/przewozy\");",
+											"    pm.expect(json._links.autobus.href).to.eql(\"http://localhost:8080/autobusy/2\");",
+											"    pm.expect(json._links.trasa.href).to.eql(\"http://localhost:8080/trasy/2\");",
+											"    pm.expect(json._links[\"klient-2\"].href).to.eql(\"http://localhost:8080/klienci/2\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 500,\n  \"autobus\": { \"idAutobus\": 2 },\n  \"trasa\": { \"idTrasa\": 2 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Aktualizacja danych nieistniejacego przewozu",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test(\"Komunikat błędu o nieistniejącym przewozie\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\", \"Nie znaleziono przewozu o ID 9999\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 2 },\n  \"trasa\": { \"idTrasa\": 2 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy/9999",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"9999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawna aktualizacja danych klienta - puste body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"const json = pm.response.json();",
+											"",
+											"pm.test(\"Walidacja pola 'dataWyjazdu'\", function () {",
+											"    pm.expect(json).to.have.property(\"dataWyjazdu\");",
+											"    pm.expect(json.dataWyjazdu).to.be.an(\"array\").that.includes(\"Data wyjazdu jest wymagana\");",
+											"});",
+											"",
+											"pm.test(\"Walidacja pola 'trasa'\", function () {",
+											"    pm.expect(json).to.have.property(\"trasa\");",
+											"    pm.expect(json.trasa).to.be.an(\"array\").that.includes(\"Trasa jest wymagana\");",
+											"});",
+											"",
+											"pm.test(\"Walidacja pola 'autobus'\", function () {",
+											"    pm.expect(json).to.have.property(\"autobus\");",
+											"    pm.expect(json.autobus).to.be.an(\"array\").that.includes(\"Autobus jest wymagany\");",
+											"});",
+											"",
+											"pm.test(\"Walidacja pola 'dataPrzyjazdu'\", function () {",
+											"    pm.expect(json).to.have.property(\"dataPrzyjazdu\");",
+											"    pm.expect(json.dataPrzyjazdu).to.be.an(\"array\").that.includes(\"Data przyjazdu jest wymagana\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawna aktualizacja danych klienta - nieistniejace id autobusu",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Komunikat błędu o nieistniejącym autobusie\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\", \"Autobus o podanym ID nie istnieje.\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 9999 },\n  \"trasa\": { \"idTrasa\": 2 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Niepoprawna aktualizacja danych klienta - nieistniejace id trasy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Komunikat błędu o nieistniejącej trasie\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\", \"Trasa o podanym ID nie istnieje.\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 2 },\n  \"trasa\": { \"idTrasa\": 9999 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Proba usuniecia powiazanego autobusu",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 409\", function () {",
+											"    pm.response.to.have.status(409);",
+											"});",
+											"",
+											"pm.test(\"Komunikat o powiązanym przewozie przy usuwaniu autobusu\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\", \"Nie można usunąć autobusu – powiązany z przewozami o ID: 1, 2\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 2 },\n  \"trasa\": { \"idTrasa\": 2 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/autobusy/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"autobusy",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Proba usuniecia powiazanej trasy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Komunikat o powiązanych przewozach przy usuwaniu trasy\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(",
+											"        \"message\",",
+											"        \"Nie można usunąć – trasa jest używana w przewozach o ID: [1, 2]. Usuń te przewozy przed usunięciem trasy.\"",
+											"    );",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 2 },\n  \"trasa\": { \"idTrasa\": 2 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/trasy/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"trasy",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Proba usuniecia nieistniejacego przewozu",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test(\"Komunikat o nieistniejącym przewozie przy usuwaniu\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\", \"Nie można usunąć – przewóz o ID 9999 nie istnieje\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 2 },\n  \"trasa\": { \"idTrasa\": 2 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy/9999",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"9999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Usuwanie przewozu",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status to 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Komunikat o poprawnym usunięciu przewozu\", function () {",
+											"    const json = pm.response.json();",
+											"    pm.expect(json).to.have.property(\"message\", \"Przewóz o ID 1 został usunięty\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dataWyjazdu\": \"2025-06-01T08:00:00\",\n  \"dataPrzyjazdu\": \"2025-06-01T12:00:00\",\n  \"cena\": 49.99,\n  \"autobus\": { \"idAutobus\": 2 },\n  \"trasa\": { \"idTrasa\": 2 },\n  \"klienci\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/przewozy/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Suite teardown",
+					"item": [
+						{
+							"name": "UsunPrzewozy",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/przewozy/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"przewozy",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UsunTrasy",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/trasy/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"trasy",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UsunAutobusy",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/autobusy/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"autobusy",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UsunKlienta1",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/klienci/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"klienci",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UsunKlienta2",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/klienci/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"klienci",
+										"3"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
 		}
 	]
 }

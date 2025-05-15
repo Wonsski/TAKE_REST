@@ -1,8 +1,9 @@
-package com.example.demo.dto;
+package com.example.demo.model.dto;
 
 import com.example.demo.controller.AutobusController;
 import com.example.demo.model.Autobus;
 import lombok.Getter;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.hateoas.RepresentationModel;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -13,9 +14,11 @@ public class AutobusDTO extends RepresentationModel<AutobusDTO> {
     private final String marka;
     private final String model;
     private final String nrRej;
-    private final int liczbaMiejsc;
+    private final Integer liczbaMiejsc;
 
     public AutobusDTO(Autobus autobus) {
+        super();
+
         this.idAutobus = autobus.getIdAutobus();
         this.marka = autobus.getMarka();
         this.model = autobus.getModel();

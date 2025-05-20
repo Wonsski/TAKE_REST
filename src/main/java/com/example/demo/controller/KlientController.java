@@ -6,15 +6,13 @@ import com.example.demo.model.Klient;
 import com.example.demo.repository.KlientRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
 @RestController
@@ -117,13 +115,36 @@ public class KlientController {
 
     // FILTER
     @GetMapping("/szukaj")
-    public ResponseEntity<Map<String, List<KlientDTO>>> searchByEmail(@RequestParam("email") String email) {
-        List<KlientDTO> lista = klientRepo.findByEmailContainingIgnoreCase(email)
+    public ResponseEntity<Map<String, List<KlientDTO>>> search(
+            @RequestParam(name = "imie", required = false) String imie,
+            @RequestParam(name = "nazwisko", required = false) String nazwisko,
+            @RequestParam(name = "email", required = false) String email,
+            @RequestParam(name = "nrTel", required = false) String nrTel) {
+
+        Specification<Klient> spec = (root, query, cb) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+
+            if (imie != null && !imie.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("imie")), "%" + imie.toLowerCase() + "%"));
+            }
+            if (nazwisko != null && !nazwisko.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("nazwisko")), "%" + nazwisko.toLowerCase() + "%"));
+            }
+            if (email != null && !email.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("email")), "%" + email.toLowerCase() + "%"));
+            }
+            if (nrTel != null && !nrTel.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("nrTel")), "%" + nrTel.toLowerCase() + "%"));
+            }
+
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+
+        List<KlientDTO> lista = klientRepo.findAll(spec)
                 .stream()
                 .map(KlientDTO::new)
                 .toList();
 
         return ResponseEntity.ok(Map.of("klientDTOList", lista));
     }
-
 }

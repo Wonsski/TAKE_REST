@@ -10,10 +10,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import jakarta.validation.Valid;
+import jakarta.persistence.criteria.Predicate;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -119,14 +121,25 @@ public class AutobusController {
     // FILTER
     @GetMapping("/szukaj")
     public ResponseEntity<Map<String, List<AutobusDTO>>> szukaj(
-    		@RequestParam(name = "marka", required = false) String marka,
-    		@RequestParam(name = "model", required = false) String model,
-    		@RequestParam(name = "nrRej", required = false) String nrRej) {
+            @RequestParam(name = "marka", required = false) String marka,
+            @RequestParam(name = "model", required = false) String model,
+            @RequestParam(name = "nrRej", required = false) String nrRej) {
 
-        Specification<Autobus> spec = Specification
-                .where(AutobusSpecifications.Marka(marka))
-                .and(AutobusSpecifications.Model(model))
-                .and(AutobusSpecifications.NrRej(nrRej));
+        Specification<Autobus> spec = (root, query, cb) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+
+            if (marka != null && !marka.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("marka")), "%" + marka.toLowerCase() + "%"));
+            }
+            if (model != null && !model.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("model")), "%" + model.toLowerCase() + "%"));
+            }
+            if (nrRej != null && !nrRej.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("nrRej")), "%" + nrRej.toLowerCase() + "%"));
+            }
+
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
 
         List<AutobusDTO> dtoList = autobusRepo.findAll(spec)
                 .stream()
@@ -136,34 +149,4 @@ public class AutobusController {
         return ResponseEntity.ok(Map.of("autobusDTOList", dtoList));
     }
 
-}
-
-class AutobusSpecifications {
-
-    public static Specification<Autobus> Marka(String marka) {
-        return (root, query, criteriaBuilder) -> {
-            if (marka != null && !marka.isEmpty()) {
-                return criteriaBuilder.like(criteriaBuilder.lower(root.get("marka")), "%" + marka.toLowerCase() + "%");
-            }
-            return null;
-        };
-    }
-
-    public static Specification<Autobus> Model(String model) {
-        return (root, query, criteriaBuilder) -> {
-            if (model != null && !model.isEmpty()) {
-                return criteriaBuilder.like(criteriaBuilder.lower(root.get("model")), "%" + model.toLowerCase() + "%");
-            }
-            return null;
-        };
-    }
-
-    public static Specification<Autobus> NrRej(String nrRej) {
-        return (root, query, criteriaBuilder) -> {
-            if (nrRej != null && !nrRej.isEmpty()) {
-                return criteriaBuilder.like(criteriaBuilder.lower(root.get("nrRej")), "%" + nrRej.toLowerCase() + "%");
-            }
-            return null;
-        };
-    }
 }

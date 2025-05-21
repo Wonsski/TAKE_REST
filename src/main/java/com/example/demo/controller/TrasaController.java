@@ -7,6 +7,7 @@ import com.example.demo.repository.PrzewozRepository;
 import com.example.demo.repository.TrasaRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -121,10 +122,40 @@ public class TrasaController {
 
     // FILTER
     @GetMapping("/szukaj")
-    public ResponseEntity<Map<String, List<TrasaDTO>>> searchByWyjazd(
-            @RequestParam(name = "miejsceWyjazdu", required = false) String miejsceWyjazdu) {
+    public ResponseEntity<Map<String, List<TrasaDTO>>> search(
+            @RequestParam(name = "miejsceWyjazdu", required = false) String miejsceWyjazdu,
+            @RequestParam(name = "miejscePrzyjazdu", required = false) String miejscePrzyjazdu,
+            @RequestParam(name = "minDystans", required = false) Double minDystans,
+            @RequestParam(name = "maxDystans", required = false) Double maxDystans,
+            @RequestParam(name = "minCzasPodrozy", required = false) Double minCzasPodrozy,
+            @RequestParam(name = "maxCzasPodrozy", required = false) Double maxCzasPodrozy) {
 
-        List<TrasaDTO> lista = trasaRepo.findByMiejsceWyjazduContainingIgnoreCase(miejsceWyjazdu)
+        Specification<Trasa> spec = (root, query, cb) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+
+            if (miejsceWyjazdu != null && !miejsceWyjazdu.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("miejsceWyjazdu")), "%" + miejsceWyjazdu.toLowerCase() + "%"));
+            }
+            if (miejscePrzyjazdu != null && !miejscePrzyjazdu.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("miejscePrzyjazdu")), "%" + miejscePrzyjazdu.toLowerCase() + "%"));
+            }
+            if (minDystans != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("dystans"), minDystans));
+            }
+            if (maxDystans != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("dystans"), maxDystans));
+            }
+            if (minCzasPodrozy != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("czasPodrozy"), minCzasPodrozy));
+            }
+            if (maxCzasPodrozy != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("czasPodrozy"), maxCzasPodrozy));
+            }
+
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+
+        List<TrasaDTO> lista = trasaRepo.findAll(spec)
                 .stream()
                 .map(TrasaDTO::new)
                 .toList();

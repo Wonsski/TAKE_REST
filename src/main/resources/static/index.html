@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>System Przewozów – Dokumentacja API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background: #f7f7f7; }
+        h1, h2 { color: #2c3e50; }
+        code { background: #eee; padding: 2px 4px; border-radius: 4px; }
+        section { background: white; padding: 1.5em; margin-bottom: 1.5em; border-radius: 8px; box-shadow: 0 0 10px #ccc; }
+        ul { padding-left: 1.5em; }
+    </style>
+</head>
+<body>
+
+    <h1>System Przewozów – Dokumentacja API</h1>
+
+    <section>
+        <h2>Klienci (<code>/klienci</code>)</h2>
+        <ul>
+            <li><code>GET /klienci</code> – lista wszystkich klientów</li>
+            <li><code>GET /klienci/{id}</code> – szczegóły klienta</li>
+            <li><code>POST /klienci</code> – dodaj klienta</li>
+            <li><code>PUT /klienci/{id}</code> – edytuj klienta</li>
+            <li><code>DELETE /klienci/{id}</code> – usuń klienta</li>
+            <li><code>GET /klienci/szukaj?nazwaPola=</code> – filtrowanie</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Autobusy (<code>/autobusy</code>)</h2>
+        <ul>
+            <li><code>GET /autobusy</code> – lista autobusów</li>
+            <li><code>GET /autobusy/{id}</code> – szczegóły autobusu</li>
+            <li><code>POST /autobusy</code> – dodaj autobus</li>
+            <li><code>PUT /autobusy/{id}</code> – edytuj autobus</li>
+            <li><code>DELETE /autobusy/{id}</code> – usuń autobus</li>
+            <li><code>GET /autobusy/szukaj?marka=&model=&nazwaPola=</code> – filtrowanie </li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Trasy (<code>/trasy</code>)</h2>
+        <ul>
+            <li><code>GET /trasy</code> – lista tras</li>
+            <li><code>GET /trasy/{id}</code> – szczegóły trasy</li>
+            <li><code>POST /trasy</code> – dodaj trasę</li>
+            <li><code>PUT /trasy/{id}</code> – edytuj trasę</li>
+            <li><code>DELETE /trasy/{id}</code> – usuń trasę</li>
+            <li><code>GET /trasy/szukaj?nazwaPola=</code> – filtrowanie </li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Przewozy (<code>/przewozy</code>)</h2>
+        <ul>
+            <li><code>GET /przewozy</code> – lista przewozów</li>
+            <li><code>GET /przewozy/{id}</code> – szczegóły przewozu</li>
+            <li><code>POST /przewozy</code> – dodaj przewóz</li>
+            <li><code>PUT /przewozy/{id}</code> – edytuj przewóz</li>
+            <li><code>DELETE /przewozy/{id}</code> – usuń przewóz</li>
+            <li><code>GET /przewozy/szukaj?cenaMin=&cenaMax=</code> – filtrowanie po cenie</li>
+            <li><code>GET /przewozy/{id}/klienci</code> – klienci zapisani na przewóz</li>
+            <li><code>POST /przewozy/{idPrzewozu}/dodaj-klienta/{idKlienta}</code> – zapisz klienta na przewóz</li>
+        </ul>
+    </section>
+
+    <footer>
+        <hr>
+        <p>2025 System Przewozów API</p>
+    </footer>
+
+</body>
+</html>

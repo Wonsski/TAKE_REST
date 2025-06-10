@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.Autobus;
 import com.example.demo.model.Trasa;
 import com.example.demo.model.dto.KlientDTO;
+import com.example.demo.model.dto.PrzewozCreateDTO;
 import com.example.demo.model.dto.PrzewozDTO;
 import com.example.demo.model.Klient;
 import com.example.demo.model.Przewoz;
@@ -38,24 +39,30 @@ public class PrzewozController {
 
     // CREATE
     @PostMapping
-    public ResponseEntity<?> addPrzewoz(@Valid @RequestBody Przewoz przewoz) {
-        try {
-            validatePrzewoz(przewoz);
-
-            Autobus autobus = autobusRepo.findById(przewoz.getAutobus().getIdAutobus())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Autobus nie istnieje"));
-            Trasa trasa = trasaRepo.findById(przewoz.getTrasa().getIdTrasa())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Trasa nie istnieje"));
-
-            przewoz.setAutobus(autobus);
-            przewoz.setTrasa(trasa);
-
-            Przewoz zapisany = przewozRepo.save(przewoz);
-            return ResponseEntity.ok(new PrzewozDTO(zapisany));
-        } catch (Exception e) {
-            return message(HttpStatus.BAD_REQUEST, "Błąd podczas zapisywania przewozu: " + e.getMessage());
+    public ResponseEntity<?> addPrzewoz(@Valid @RequestBody PrzewozCreateDTO dto) {
+        if (dto.getDataWyjazdu().isAfter(dto.getDataPrzyjazdu())) {
+            return message(HttpStatus.BAD_REQUEST, "Data wyjazdu nie może być po dacie przyjazdu.");
         }
+
+        Autobus autobus = autobusRepo.findById(dto.getIdAutobus())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Autobus nie istnieje"));
+
+        Trasa trasa = trasaRepo.findById(dto.getIdTrasa())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Trasa nie istnieje"));
+
+        Przewoz przewoz = new Przewoz();
+        przewoz.setDataWyjazdu(dto.getDataWyjazdu());
+        przewoz.setDataPrzyjazdu(dto.getDataPrzyjazdu());
+        przewoz.setCena(dto.getCena());
+        przewoz.setAutobus(autobus);
+        przewoz.setTrasa(trasa);
+
+        Przewoz zapisany = przewozRepo.save(przewoz);
+        return ResponseEntity.ok(new PrzewozDTO(zapisany));
     }
+
+
+
 
     // READ ALL
     @GetMapping

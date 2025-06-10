@@ -4,7 +4,6 @@ import com.example.demo.controller.KlientController;
 import com.example.demo.model.Klient;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @Getter

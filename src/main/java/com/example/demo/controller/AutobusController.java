@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Przewoz;
+import com.example.demo.model.dto.AutobusCreateDTO;
 import com.example.demo.model.dto.AutobusDTO;
 import com.example.demo.model.Autobus;
 import com.example.demo.repository.AutobusRepository;
@@ -36,14 +37,21 @@ public class AutobusController {
 
     // CREATE
     @PostMapping
-    public AutobusDTO addAutobus(@RequestBody @Valid Autobus autobus) {
+    public AutobusDTO addAutobus(@RequestBody @Valid AutobusCreateDTO dto) {
         try {
-            Autobus zapisanyAutobus = autobusRepo.save(autobus);
-            return new AutobusDTO(zapisanyAutobus);
+            Autobus autobus = new Autobus();
+            autobus.setMarka(dto.getMarka());
+            autobus.setModel(dto.getModel());
+            autobus.setNrRej(dto.getNrRej());
+            autobus.setLiczbaMiejsc(dto.getLiczbaMiejsc());
+
+            Autobus zapisany = autobusRepo.save(autobus);
+            return new AutobusDTO(zapisany);
         } catch (Exception e) {
             throw new RuntimeException("Błąd podczas zapisywania autobusu: " + e.getMessage());
         }
     }
+
 
     // READ ALL
     @GetMapping

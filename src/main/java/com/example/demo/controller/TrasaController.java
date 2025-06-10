@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Przewoz;
+import com.example.demo.model.dto.TrasaCreateDTO;
 import com.example.demo.model.dto.TrasaDTO;
 import com.example.demo.model.Trasa;
 import com.example.demo.repository.PrzewozRepository;
@@ -37,14 +38,21 @@ public class TrasaController {
 
     // CREATE
     @PostMapping
-    public TrasaDTO addTrasa(@Valid @RequestBody Trasa trasa) {
+    public TrasaDTO addTrasa(@Valid @RequestBody TrasaCreateDTO dto) {
         try {
-            Trasa newTrasa = trasaRepo.save(trasa);
-            return new TrasaDTO(newTrasa);
+            Trasa trasa = new Trasa();
+            trasa.setMiejsceWyjazdu(dto.getMiejsceWyjazdu());
+            trasa.setMiejscePrzyjazdu(dto.getMiejscePrzyjazdu());
+            trasa.setDystans(dto.getDystans());
+            trasa.setCzasPodrozy(dto.getCzasPodrozy());
+
+            Trasa saved = trasaRepo.save(trasa);
+            return new TrasaDTO(saved);
         } catch (Exception e) {
             throw new RuntimeException("Błąd podczas zapisywania trasy: " + e.getMessage());
         }
     }
+
 
  // READ ALL
     @GetMapping

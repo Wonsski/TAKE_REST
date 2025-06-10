@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Przewoz;
+import com.example.demo.model.dto.KlientCreateDTO;
 import com.example.demo.model.dto.KlientDTO;
 import com.example.demo.model.Klient;
 import com.example.demo.repository.KlientRepository;
@@ -30,14 +31,21 @@ public class KlientController {
 
     // CREATE
     @PostMapping
-    public KlientDTO addKlient(@RequestBody @Valid Klient klient) {
+    public KlientDTO addKlient(@RequestBody @Valid KlientCreateDTO dto) {
         try {
-            Klient newklient = klientRepo.save(klient);
-            return new KlientDTO(klientRepo.save(newklient));
+            Klient klient = new Klient();
+            klient.setImie(dto.getImie());
+            klient.setNazwisko(dto.getNazwisko());
+            klient.setEmail(dto.getEmail());
+            klient.setNrTel(dto.getNrTel());
+
+            Klient saved = klientRepo.save(klient);
+            return new KlientDTO(saved);
         } catch (Exception e) {
             throw new RuntimeException("Błąd podczas zapisywania klienta: " + e.getMessage());
         }
     }
+
 
     // READ ALL
     @GetMapping

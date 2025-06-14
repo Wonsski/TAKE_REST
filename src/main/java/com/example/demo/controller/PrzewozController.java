@@ -1,12 +1,12 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Autobus;
+import com.example.demo.model.Klient;
+import com.example.demo.model.Przewoz;
 import com.example.demo.model.Trasa;
 import com.example.demo.model.dto.KlientDTO;
 import com.example.demo.model.dto.PrzewozCreateDTO;
 import com.example.demo.model.dto.PrzewozDTO;
-import com.example.demo.model.Klient;
-import com.example.demo.model.Przewoz;
 import com.example.demo.repository.AutobusRepository;
 import com.example.demo.repository.KlientRepository;
 import com.example.demo.repository.PrzewozRepository;
@@ -18,10 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/przewozy")
@@ -45,10 +45,10 @@ public class PrzewozController {
         }
 
         Autobus autobus = autobusRepo.findById(dto.getIdAutobus())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Autobus nie istnieje"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Autobus o podanym ID nie istnieje"));
 
         Trasa trasa = trasaRepo.findById(dto.getIdTrasa())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Trasa nie istnieje"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Trasa o podanym ID nie istnieje"));
 
         Przewoz przewoz = new Przewoz();
         przewoz.setDataWyjazdu(dto.getDataWyjazdu());
@@ -60,9 +60,6 @@ public class PrzewozController {
         Przewoz zapisany = przewozRepo.save(przewoz);
         return ResponseEntity.ok(new PrzewozDTO(zapisany));
     }
-
-
-
 
     // READ ALL
     @GetMapping
@@ -83,32 +80,37 @@ public class PrzewozController {
     public ResponseEntity<?> getPrzewoz(@PathVariable("id") Integer id) {
         Optional<Przewoz> przewozOpt = przewozRepo.findById(id);
 
-        if (przewozOpt.isPresent()) {
-            return ResponseEntity.ok(new PrzewozDTO(przewozOpt.get()));
-        } else {
-            return message(HttpStatus.NOT_FOUND, "Nie znaleziono przewozu o ID " + id);
-        }
+        return przewozOpt
+                .<ResponseEntity<?>>map(przewoz -> ResponseEntity.ok(new PrzewozDTO(przewoz)))
+                .orElseGet(() -> message(HttpStatus.NOT_FOUND, "Nie znaleziono przewozu o ID " + id));
     }
 
-
-    // UPDATE
+    // UPDATE using PrzewozCreateDTO
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePrzewoz(@PathVariable("id") Integer id, @Valid @RequestBody Przewoz nowy) {
+    public ResponseEntity<?> updatePrzewoz(@PathVariable("id") Integer id, @Valid @RequestBody PrzewozCreateDTO dto) {
         Optional<Przewoz> opt = przewozRepo.findById(id);
         if (opt.isEmpty()) {
             return message(HttpStatus.NOT_FOUND, "Nie znaleziono przewozu o ID " + id);
         }
 
-        validatePrzewoz(nowy);
+        if (dto.getDataWyjazdu().isAfter(dto.getDataPrzyjazdu())) {
+            return message(HttpStatus.BAD_REQUEST, "Data wyjazdu nie może być po dacie przyjazdu.");
+        }
 
-        Przewoz istniejący = opt.get();
-        istniejący.setDataWyjazdu(nowy.getDataWyjazdu());
-        istniejący.setDataPrzyjazdu(nowy.getDataPrzyjazdu());
-        istniejący.setCena(nowy.getCena());
-        istniejący.setTrasa(nowy.getTrasa());
-        istniejący.setAutobus(nowy.getAutobus());
+        Autobus autobus = autobusRepo.findById(dto.getIdAutobus())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Autobus o podanym ID nie istnieje"));
 
-        return ResponseEntity.ok(new PrzewozDTO(przewozRepo.save(istniejący)));
+        Trasa trasa = trasaRepo.findById(dto.getIdTrasa())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Trasa o podanym ID nie istnieje"));
+
+        Przewoz existing = opt.get();
+        existing.setDataWyjazdu(dto.getDataWyjazdu());
+        existing.setDataPrzyjazdu(dto.getDataPrzyjazdu());
+        existing.setCena(dto.getCena());
+        existing.setAutobus(autobus);
+        existing.setTrasa(trasa);
+
+        return ResponseEntity.ok(new PrzewozDTO(przewozRepo.save(existing)));
     }
 
     // DELETE
@@ -168,28 +170,6 @@ public class PrzewozController {
         klient.getPrzewozy().add(przewoz);
 
         return ResponseEntity.ok(new PrzewozDTO(przewozRepo.save(przewoz)));
-    }
-
-    private void validatePrzewoz(Przewoz p) {
-        if (p.getDataWyjazdu().isAfter(p.getDataPrzyjazdu())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data wyjazdu nie może być po dacie przyjazdu.");
-        }
-        if (p.getCena() < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cena nie może być ujemna.");
-        }
-        if (!autobusRepo.existsById(p.getAutobus().getIdAutobus())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Autobus o podanym ID nie istnieje.");
-        }
-        if (!trasaRepo.existsById(p.getTrasa().getIdTrasa())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Trasa o podanym ID nie istnieje.");
-        }
-
-        if (p.getKlienci() != null) {
-            long count = p.getKlienci().stream().map(Klient::getIdKlient).distinct().count();
-            if (count < p.getKlienci().size()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lista klientów zawiera duplikaty.");
-            }
-        }
     }
 
     // FILTER

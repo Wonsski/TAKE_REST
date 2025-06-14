@@ -19,15 +19,16 @@ public class PrzewozCreateDTO {
     @Schema(example = "2025-06-01")
     private final LocalDate dataPrzyjazdu;
 
-    @Positive(message = "Cena musi być większa od 0")
+    @PositiveOrZero(message = "Cena nie może być ujemna")
+    @NotNull(message = "Cena jest wymagana")
     @Schema(example = "49.99")
-    private final double cena;
+    private final Double cena;
 
-    @NotNull(message = "ID autobusu jest wymagane")
+    @NotNull(message = "Autobus jest wymagany")
     @Schema(example = "2")
     private final Integer idAutobus;
 
-    @NotNull(message = "ID trasy jest wymagane")
+    @NotNull(message = "Trasa jest wymagana")
     @Schema(example = "2")
     private final Integer idTrasa;
 
@@ -35,7 +36,7 @@ public class PrzewozCreateDTO {
     public PrzewozCreateDTO(
             @JsonProperty("dataWyjazdu") LocalDate dataWyjazdu,
             @JsonProperty("dataPrzyjazdu") LocalDate dataPrzyjazdu,
-            @JsonProperty("cena") double cena,
+            @JsonProperty("cena") Double cena,
             @JsonProperty("idAutobus") Integer idAutobus,
             @JsonProperty("idTrasa") Integer idTrasa
     ) {

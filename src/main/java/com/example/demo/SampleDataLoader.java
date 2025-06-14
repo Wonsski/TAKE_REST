@@ -31,7 +31,7 @@ public class SampleDataLoader {
             Autobus a1 = new Autobus(null, "Mercedes", "Sprinter", "KR1234A", 20);
             Autobus a2 = new Autobus(null, "Setra", "S415", "KR5678B", 50);
             Autobus a3 = new Autobus(null, "Solaris", "15", "KR9012C", 30);
-            Autobus a4 = new Autobus(null, "MAN", "Fajny", "KR3456D", 40);
+            Autobus a4 = new Autobus(null, "Solaris", "Urbino 15", "KR3456D", 55);
             autobusRepo.saveAll(List.of(a1, a2, a3, a4));
 
             // KLIENCI

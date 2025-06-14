@@ -17,12 +17,12 @@ public class KlientCreateDTO {
     @Schema(example = "Kowalski")
     private final String nazwisko;
 
-    @Email(message = "Niepoprawny adres email")
+    @Email(message = "Nieprawidłowy format adresu e-mail")
     @NotBlank(message = "Email jest wymagany")
     @Schema(example = "jan.kowalski@example.com")
     private final String email;
 
-    @Pattern(regexp = "\\d{9}", message = "Numer telefonu musi zawierać 9 cyfr")
+    @Pattern(regexp = "\\d{9}", message = "Numer telefonu powinien mieć dokładnie 9 cyfr")
     @NotBlank(message = "Numer telefonu jest wymagany")
     @Schema(example = "123456789")
     private final String nrTel;

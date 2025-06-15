@@ -38,6 +38,7 @@ public class PrzewozDTO extends RepresentationModel<PrzewozDTO> {
         // Linki
         add(linkTo(methodOn(PrzewozController.class).getPrzewoz(idPrzewoz)).withSelfRel());
         add(linkTo(methodOn(PrzewozController.class).getAll()).withRel("wszystkie-przewozy"));
+        add(linkTo(methodOn(PrzewozController.class).getKlienciForPrzewoz(idPrzewoz)).withRel("klienci"));
 
         if (p.getAutobus() != null && p.getAutobus().getIdAutobus() != null) {
             add(linkTo(methodOn(AutobusController.class).getAutobus(p.getAutobus().getIdAutobus())).withRel("autobus"));
@@ -47,12 +48,5 @@ public class PrzewozDTO extends RepresentationModel<PrzewozDTO> {
             add(linkTo(methodOn(TrasaController.class).getTrasa(p.getTrasa().getIdTrasa())).withRel("trasa"));
         }
 
-        if (p.getKlienci() != null && !p.getKlienci().isEmpty()) {
-            for (Klient klient : p.getKlienci()) {
-                if (klient != null && klient.getIdKlient() != null) {
-                    add(linkTo(methodOn(KlientController.class).getKlient(klient.getIdKlient())).withRel("klient-" + klient.getIdKlient()));
-                }
-            }
-        }
     }
 }
